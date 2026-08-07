@@ -119,23 +119,20 @@ function viewHome() {
 
   return `
   <section class="hero">
-    <div class="hero__media">
-      <img src="/assets/brand/cyclist-editorial.png" alt="Atleta con equipación V-ONE-B" fetchpriority="high">
-    </div>
-    <div class="hero__in">
-      <p class="eyebrow hero__eyebrow">Colección 2026</p>
-      <h1 class="display">Vos sos tu<br>único rival</h1>
-      <p class="lede">Textiles importados de alto desempeño, secado rápido y protección UV.
-        Diseñados, confeccionados y probados en Costa&nbsp;Rica.</p>
-      <div class="hero__cta">
-        <a class="btn btn--red" href="/c/ciclismo" data-link>Ver colección</a>
-        <a class="btn btn--ghost-d" href="/c/outlet" data-link>Outlet</a>
-      </div>
-    </div>
-    <p class="hero__meta">V-ONE-B · CRC · Hecho en Costa Rica</p>
+    <div class="hero__glow" aria-hidden="true"></div>
+    <h1 class="hero__mark">
+      <img src="/assets/brand/wordmark.svg" alt="V-ONE-B" width="587" height="76" fetchpriority="high">
+    </h1>
+    <p class="hero__tag">Colección 2026</p>
+    <a class="hero__scroll" href="#cats" aria-label="Ver colecciones">
+      <span>Explorar</span>
+      <svg viewBox="0 0 16 26" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+        <path d="M8 1v22M2.5 17.5L8 23.5l5.5-6"/>
+      </svg>
+    </a>
   </section>
 
-  <section class="dark"><div class="cats">${cats}</div></section>
+  <section class="dark" id="cats"><div class="cats">${cats}</div></section>
 
   <section class="sec snow rv">
     <div class="wrap">
@@ -154,7 +151,7 @@ function viewHome() {
       <h2 class="display display--sm">Equipación<br>sin excusas</h2>
       <p class="lede">Cada prenda nace de una necesidad real en ruta, pista o montaña.
         Cortes ergonómicos, costuras planas y telas que trabajan a favor del cuerpo.</p>
-      <div class="hero__cta"><a class="btn btn--ghost-d" href="/c/atletismo" data-link>Explorar atletismo</a></div>
+      <div class="ctas"><a class="btn btn--ghost-d" href="/c/atletismo" data-link>Explorar atletismo</a></div>
     </div>
   </section>
 
@@ -215,7 +212,7 @@ function viewHome() {
       <p class="eyebrow eyebrow--red">Manifiesto</p>
       <h2 class="display">No vendemos ropa.<br>Vendemos kilómetros.</h2>
       <p class="lede manifesto__sub">Desde 2018 fabricamos en San José para quienes entrenan de verdad.</p>
-      <div class="hero__cta" style="justify-content:center"><a class="btn btn--red" href="/c/costa-rica" data-link>Colección Costa Rica</a></div>
+      <div class="ctas" style="justify-content:center"><a class="btn btn--red" href="/c/costa-rica" data-link>Colección Costa Rica</a></div>
     </div>
   </section>`;
 }
@@ -429,6 +426,8 @@ const view404 = () => `<section class="sec light"><div class="wrap empty">
 </div></section>`;
 
 /* ── Router ───────────────────────────────────────────────── */
+let lastKey = '';
+
 async function render() {
   await S.ready;
   const { pathname, searchParams } = new URL(location.href);
@@ -444,6 +443,9 @@ async function render() {
 
   document.title = title;
   main.innerHTML = html;
+  // Se lee de location, no de searchParams: re-serializar cambia la codificación
+  // y el guardia de popstate compara contra location.search en crudo.
+  lastKey = location.pathname + location.search;
 
   $$('.nav__link').forEach(a => a.classList.toggle('is-on', a.getAttribute('href') === `/c/${seg[1]}`));
   observe();
@@ -464,7 +466,12 @@ document.addEventListener('click', e => {
   closeAll();
   go(a.getAttribute('href'));
 });
-window.addEventListener('popstate', render);
+// Un salto a un ancla (#main, #cats) también dispara popstate. Sin este guardia
+// el router re-renderiza #main, destruye el elemento de destino y el salto se pierde.
+window.addEventListener('popstate', () => {
+  if (location.pathname + location.search === lastKey) return; // sólo cambió el hash
+  render();
+});
 
 /* ── Interacciones por vista ──────────────────────────────── */
 function bindView() {
@@ -489,6 +496,15 @@ function bindView() {
   }));
 
   $('.js-guide')?.addEventListener('click', () => toast('Guía de tallas: pendiente de contenido'));
+
+  // El salto nativo al fragmento no sobrevive junto al router de History API.
+  // Se conserva el href por accesibilidad y sin JS, pero el scroll se hace aquí.
+  $('.hero__scroll')?.addEventListener('click', e => {
+    e.preventDefault();
+    // Sin `behavior`: hereda el scroll-behavior del CSS, que ya respeta
+    // prefers-reduced-motion. Pasarlo explícito aquí resultaba inestable.
+    $('#cats')?.scrollIntoView();
+  });
 
   $('.js-add')?.addEventListener('click', e => {
     const p = S.byHandle.get(e.currentTarget.dataset.h);

@@ -23,11 +23,21 @@ El manual de marca no está aplicado en ninguna parte.
 | Tipografía | Jost para todo | **Michroma** en display (equivalente web de Square 721 BdEx BT) + **Poppins** en texto |
 | Jerarquía | `h2` a 13px | Escala fluida con `clamp()`, display hasta 5.6rem |
 | Navegación | 40+ enlaces planos, tallas en el menú | 9 disciplinas; género, tipo y stock pasan a facetas filtrables |
-| Portada | Grillas de producto encadenadas | Hero editorial, tira de categorías, bandas editoriales, manifiesto |
+| Portada | Grillas de producto encadenadas | Página 1 del manual como hero, tira de categorías, bandas editoriales, manifiesto |
+| Logotipo | Texto con la fuente del tema | Trazado vectorial extraído del manual, en header, hero y footer |
 | Ficha | Precio y variantes del tema | Galería, selector de talla con agotados tachados, acordeones de material/envío/postventa, similares |
 | Búsqueda | Campo del tema | Overlay con ranking sobre título, tipo y etiquetas; atajo `/` |
 
 ## Decisiones de diseño
+
+**La portada es la página 1 del manual.** Lienzo negro, resplandor rojo desde la esquina
+inferior izquierda y el logotipo centrado. El resplandor sale del PDF tal cual
+(`assets/brand/hero-glow.png`, 12 KB, con el logotipo redactado en negro): ninguna
+combinación de `radial-gradient` lo reproducía — al medirla en diagonal se desviaba hasta
+un 60%, porque la caída no es radial. El logotipo va encima como vector extraído del propio
+PDF, así que son las letras reales de Square 721 BdEx BT y escalan nítidas. Verificado:
+desviación 0 contra el PDF en los ocho puntos muestreados, y el logo a 30.3% del ancho
+centrado en 50/50, igual que el original.
 
 **Negro como lienzo, claro para producto.** El manual es negro; la fotografía de catálogo
 está tirada sobre fondos claros. El sitio alterna: cromo negro (header, hero, bandas, footer)
