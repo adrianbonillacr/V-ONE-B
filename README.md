@@ -26,6 +26,17 @@ npx vercel --prod
 
 `site/server.js` es solo para desarrollo local; Vercel no lo usa.
 
+### URLs y acceso
+
+La URL de producción (`v-one-b.vercel.app`) es pública y es la que se comparte.
+Las URLs con hash que Vercel genera por despliegue (`v-one-…-abc123.vercel.app`)
+piden inicio de sesión: es Deployment Protection, activo por defecto. Para abrirlas
+también: **Project Settings → Deployment Protection → Vercel Authentication → Disabled**.
+
+Las cabeceras de caché de `/assets/` no usan `immutable` a propósito: esos nombres
+de archivo no llevan hash de contenido, así que un año de caché inmutable dejaría a
+los visitantes con un logotipo viejo si se cambia.
+
 ## Contenido
 
 | Carpeta | Qué es |
