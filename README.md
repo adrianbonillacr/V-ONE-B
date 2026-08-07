@@ -9,6 +9,23 @@ node site/server.js
 
 → http://localhost:3000 · Sin dependencias, sin paso de build. Node 18+.
 
+## Deploy
+
+El sitio es estático: `vercel.json` ya trae la configuración (sin build, `site/` como
+salida, fallback SPA y cabeceras de caché). Para publicarlo en Vercel:
+
+1. [vercel.com/new](https://vercel.com/new) → importar `adrianbonillacr/V-ONE-B`
+2. Dejar todo por defecto — la configuración se lee de `vercel.json`
+3. Deploy
+
+O desde la terminal, en la raíz del proyecto:
+
+```bash
+npx vercel --prod
+```
+
+`site/server.js` es solo para desarrollo local; Vercel no lo usa.
+
 ## Contenido
 
 | Carpeta | Qué es |
