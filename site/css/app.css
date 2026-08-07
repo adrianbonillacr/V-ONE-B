@@ -95,7 +95,11 @@ ul, ol { list-style: none; padding: 0; }
   line-height: 1;
   white-space: nowrap;
 }
-.logo img { height: 1em; width: auto; }
+/* El wordmark va incrustado como <symbol> en el HTML y se referencia con <use>:
+   así no depende de una petición aparte que pueda fallar o quedar cacheada mal.
+   El aspect-ratio viene del viewBox (586.82 / 75.69). */
+.mk { display: block; fill: currentColor; aspect-ratio: 586.82 / 75.69; }
+.logo .mk { height: 1em; width: auto; }
 .logo--lg { min-height: 0; font-size: clamp(1.6rem, 3vw, 2.6rem); }
 
 .display {
@@ -279,13 +283,13 @@ ul, ol { list-style: none; padding: 0; }
 }
 .hero__glow {
   position: absolute; inset: 0;
-  background: url("/assets/brand/hero-glow.png") left bottom / 100% 100% no-repeat, #000;
+  background: url("/assets/brand/hero-glow.png?v=2") left bottom / 100% 100% no-repeat, #000;
 }
 .hero__mark {
   position: relative; margin: 0;
   width: clamp(230px, 30vw, 620px);
 }
-.hero__mark img { width: 100%; height: auto; }
+.hero__mark .mk { width: 100%; height: auto; color: #fff; }
 
 .hero__tag {
   position: absolute; z-index: 1;

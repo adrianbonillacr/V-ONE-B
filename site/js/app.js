@@ -124,7 +124,7 @@ function viewHome() {
   <section class="hero">
     <div class="hero__glow" aria-hidden="true"></div>
     <h1 class="hero__mark">
-      <img src="/assets/brand/wordmark.svg" alt="V-ONE-B" width="587" height="76" fetchpriority="high">
+      <svg class="mk" role="img" aria-label="V-ONE-B"><use href="#wordmark"/></svg>
     </h1>
     <p class="hero__tag">Colección 2026</p>
     <a class="hero__scroll" href="#cats" aria-label="Ver colecciones">
