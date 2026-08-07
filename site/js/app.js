@@ -19,6 +19,9 @@ const NAV = [
   { slug: 'accesorios', label: 'Accesorios', cols: ['accesorios', 'medias', 'gorras-accesorios'], img: 'socks-light.png' },
   { slug: 'costa-rica', label: 'Costa Rica', cols: ['coleccion-fauna-de-costa-rica', 'bandanas-del-camino-de-costa-rica', 'blusas-y-camisas-del-camino-de-costa-rica', 'bolsos-del-camino-de-costa-rica', 'bolsos-del-camino-de-costa-rica-1', 'sombreros-del-camino-de-costa-rica'], img: 'editorial-crew-light.png' },
   { slug: 'outlet',     label: 'Outlet',     cols: ['outlet'], img: 'lineup-light.png', red: true },
+  // No es una colección sino un servicio: lleva a una página propia y por eso
+  // no aparece en la tira de categorías ni abre flyout de producto.
+  { slug: 'personalizacion', label: 'Personalización', href: '/personalizacion', page: true },
 ];
 const NAVBY = Object.fromEntries(NAV.map(n => [n.slug, n]));
 
@@ -67,7 +70,7 @@ function gendersOf(p) {
 
 function productsOf(slug) {
   const n = NAVBY[slug];
-  if (!n) return [];
+  if (!n || !n.cols) return [];
   const set = new Set(n.cols);
   return S.products.filter(p => p.c.some(h => set.has(h)));
 }
@@ -110,7 +113,7 @@ function viewHome() {
   const acc = productsOf('accesorios').filter(p => p.av).slice(0, 5);
   const oferta = S.products.filter(p => p.cmp > p.p && p.av).slice(0, 5);
 
-  const cats = NAV.filter(n => n.slug !== 'outlet').map((n, i) => `
+  const cats = NAV.filter(n => !n.page && n.slug !== 'outlet').map((n, i) => `
     <a class="cat" href="/c/${n.slug}" data-link>
       <span class="cat__n">${String(i + 1).padStart(2, '0')}</span>
       <svg class="cat__ar" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#ed1d24" stroke-width="1.5"><path d="M4 12L12 4M12 4H5.5M12 4v6.5"/></svg>
@@ -314,7 +317,7 @@ function viewProduct(handle) {
     ? `<span class="now">${money(p.p)}</span> <s>${money(p.cmp)}</s>`
     : money(p.p) + (p.pmax > p.p ? ` <s style="text-decoration:none">– ${money(p.pmax)}</s>` : '');
 
-  const parent = NAV.find(n => p.c.some(h => n.cols.includes(h)));
+  const parent = NAV.find(n => n.cols && p.c.some(h => n.cols.includes(h)));
 
   // Similares: mismo tipo y, si no alcanza, resto de la disciplina.
   let rel = S.products.filter(x => x.ty === p.ty && x.h !== p.h && x.av).slice(0, 5);
@@ -393,6 +396,75 @@ function viewProduct(handle) {
   </section>` : ''}`;
 }
 
+/* ── Vista: Personalización ───────────────────────────────── */
+function viewPersonalizacion() {
+  const servicios = [
+    ['Uniformes de equipo', 'Kits completos para clubes, escuelas y empresas, en los colores y con el escudo de tu equipo.',
+     '<path d="M8.5 3.5L12 6l3.5-2.5 4.5 2.2-2 5-2 .6V20.5H8V11.3l-2-.6-2-5z"/>'],
+    ['Nombre y dorsal', 'Numeración y nombre por prenda, para que cada integrante reciba la suya identificada.',
+     '<path d="M4 5h16v14H4z"/><path d="M8.5 15V9l3 4.5V9M14 9h2.5M14 15h2.5M14 9v6M14 12h2"/>'],
+    ['Ajuste de patrón', 'Modificamos largos, tiro y calce sobre nuestros moldes cuando la talla estándar no calza.',
+     '<path d="M6 3v13a3 3 0 1 0 3 3M18 3v13a3 3 0 1 1-3 3"/><path d="M6 8h12"/>'],
+    ['Cambio de piezas', 'Sustituimos badana, cierres, elásticos o paneles de prendas que ya tenés en uso.',
+     '<path d="M20 12a8 8 0 1 1-3-6.2"/><path d="M20 4v5h-5"/>'],
+  ];
+
+  const pasos = [
+    ['Contanos qué necesitás', 'Disciplina, cantidad aproximada, prendas y fecha en la que lo ocupás.'],
+    ['Propuesta y boceto', 'Te devolvemos el diseño aplicado sobre nuestros moldes, con precio y tiempo de entrega.'],
+    ['Muestra física', 'Producimos una unidad para revisar calce, color y estampado antes de correr todo el lote.'],
+    ['Producción y entrega', 'Confeccionamos en nuestro taller en San José y lo enviamos a todo el país.'],
+  ];
+
+  return `
+  <section class="dark chead">
+    <div class="wrap">
+      <nav class="crumbs" aria-label="Migas"><a href="/" data-link>Inicio</a><span>/</span>Personalización</nav>
+      <h1 class="display display--sm">Tu equipo,<br>tu equipación</h1>
+      <p class="lede" style="margin-top:1.1rem">Fabricamos en Costa Rica, así que podemos producir con tus colores,
+        tu escudo y tus medidas. Desde una prenda ajustada a tu calce hasta el kit completo de un club.</p>
+      <div class="ctas">
+        <a class="btn btn--red" href="/contacto" data-link>Pedir una cotización</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec--tight light rv">
+    <div class="wrap">
+      <div class="sec__hd"><div><p class="eyebrow">Qué hacemos</p><h2 class="display display--sm">Servicios</h2></div></div>
+      <div class="feats">
+        ${servicios.map(([h, p, ic]) => `<div class="feat">
+          <svg class="feat__ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round">${ic}</svg>
+          <h3>${h}</h3><p>${p}</p></div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section class="sec--tight snow rv">
+    <div class="wrap">
+      <div class="sec__hd"><div><p class="eyebrow">Cómo funciona</p><h2 class="display display--sm">El proceso</h2></div></div>
+      <ol class="pasos">
+        ${pasos.map(([t, d], i) => `<li class="paso">
+          <span class="paso__n">${String(i + 1).padStart(2, '0')}</span>
+          <h3>${t}</h3><p>${d}</p></li>`).join('')}
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec dark rv">
+    <div class="wrap manifesto">
+      <p class="eyebrow eyebrow--red">Empecemos</p>
+      <h2 class="display display--sm">Contanos qué<br>tenés en mente</h2>
+      <p class="lede manifesto__sub">Cantidades mínimas, tiempos y precios dependen de la prenda:
+        escribinos y te pasamos la propuesta.</p>
+      <div class="ctas" style="justify-content:center">
+        <a class="btn btn--red" href="/contacto" data-link>Contacto</a>
+        <a class="btn btn--ghost-d" href="https://wa.me/50600000000" target="_blank" rel="noopener noreferrer nofollow">WhatsApp</a>
+      </div>
+    </div>
+  </section>`;
+}
+
 /* ── Vistas simples ───────────────────────────────────────── */
 const PAGES = {
   contacto: ['Contacto', `<p>Escribinos y te respondemos el mismo día hábil.</p>
@@ -438,6 +510,7 @@ async function render() {
   if (!seg.length) html = viewHome();
   else if (seg[0] === 'c') { html = viewCollection(seg[1], searchParams); title = `${NAVBY[seg[1]]?.label || 'Colección'} — V-ONE-B`; }
   else if (seg[0] === 'p') { html = viewProduct(seg[1]); title = `${S.byHandle.get(seg[1])?.t || 'Producto'} — V-ONE-B`; }
+  else if (seg[0] === 'personalizacion') { html = viewPersonalizacion(); title = 'Personalización — V-ONE-B'; }
   else if (PAGES[seg[0]]) { html = viewPage(seg[0]); title = `${PAGES[seg[0]][0]} — V-ONE-B`; }
   else html = view404();
 
@@ -447,7 +520,8 @@ async function render() {
   // y el guardia de popstate compara contra location.search en crudo.
   lastKey = location.pathname + location.search;
 
-  $$('.nav__link').forEach(a => a.classList.toggle('is-on', a.getAttribute('href') === `/c/${seg[1]}`));
+  const aqui = seg[0] === 'c' ? `/c/${seg[1]}` : `/${seg[0] || ''}`;
+  $$('.nav__link').forEach(a => a.classList.toggle('is-on', a.getAttribute('href') === aqui));
   observe();
   bindView();
 }
@@ -689,7 +763,8 @@ function observe() {
 /* ── Chrome (nav, flyout, footer, ticker) ─────────────────── */
 function paintChrome() {
   $('#nav').innerHTML = NAV.map(n => `<div class="nav__item" data-slug="${n.slug}">
-      <a class="nav__link" href="/c/${n.slug}" data-link ${n.red ? 'style="color:var(--red)"' : ''}>${esc(n.label)}</a>
+      <a class="nav__link${n.page ? ' nav__link--svc' : ''}" href="${n.href || `/c/${n.slug}`}" data-link
+         ${n.red ? 'style="color:var(--red)"' : ''}>${esc(n.label)}</a>
     </div>`).join('');
 
   // Flyout con los tipos reales de cada disciplina (no enlaces muertos).
@@ -697,11 +772,13 @@ function paintChrome() {
   let hoverTimer;
   $$('.nav__item').forEach(item => {
     item.addEventListener('mouseenter', () => {
-      if (window.innerWidth < 1101) return;
+      if (window.innerWidth < 1240) return;
       clearTimeout(hoverTimer);
       const n = NAVBY[item.dataset.slug];
       const base = productsOf(n.slug);
-      if (!base.length) return;
+      // Los ítems de servicio no tienen producto: se cierra el panel en vez de
+      // dejar visible el contenido de la disciplina anterior.
+      if (!base.length) { flyout.hidden = true; return; }
       const types = [...new Set(base.map(p => p.ty))]
         .map(t => [t, base.filter(p => p.ty === t).length])
         .sort((a, b) => b[1] - a[1]).slice(0, 12);
@@ -727,7 +804,7 @@ function paintChrome() {
 
   $('#ftr-cols').innerHTML = [
     ['Disciplinas', NAV.slice(0, 5).map(n => [n.label, `/c/${n.slug}`])],
-    ['Tienda', [['Lifestyle', '/c/lifestyle'], ['Accesorios', '/c/accesorios'], ['Costa Rica', '/c/costa-rica'], ['Outlet', '/c/outlet']]],
+    ['Tienda', [['Lifestyle', '/c/lifestyle'], ['Accesorios', '/c/accesorios'], ['Costa Rica', '/c/costa-rica'], ['Outlet', '/c/outlet'], ['Personalización', '/personalizacion']]],
     ['Ayuda', [['Contacto', '/contacto'], ['Envíos', '/envios'], ['Políticas', '/politicas'], ['Mi cuenta', '/cuenta']]],
   ].map(([t, items]) => `<div><h4 class="eyebrow">${t}</h4>
       ${items.map(([l, h]) => `<a href="${h}" data-link>${l}</a>`).join('')}</div>`).join('');
