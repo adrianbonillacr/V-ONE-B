@@ -1,0 +1,19 @@
+# SO
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editores
+.vscode/
+.idea/
+*.swp
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Material de marca — se mantiene local, fuera del repositorio público.
+# El sitio consume las piezas que necesita desde site/assets/brand/.
+Assets/
+*.pdf
+

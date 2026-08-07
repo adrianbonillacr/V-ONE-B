@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "voneb",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["site/server.js"],
+      "port": 3000
+    }
+  ]
+}
