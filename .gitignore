@@ -14,6 +14,8 @@ npm-debug.log*
 
 # Material de marca — se mantiene local, fuera del repositorio público.
 # El sitio consume las piezas que necesita desde site/assets/brand/.
-Assets/
-*.pdf
+# La barra inicial ancla el patrón a la raíz: sin ella, y con core.ignorecase
+# activo en Windows, "Assets/" también capturaba site/assets/.
+/Assets/
+/*.pdf
 
